@@ -3,16 +3,12 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-import apiClient from '../components/apiClient';
+import { router } from '@inertiajs/vue3';
 
-const router = useRouter();
 
-const logout = async () => {
+const logout = () => {
     try {
-        await apiClient.post('/logout');
-        localStorage.removeItem('user');
-        router.push('/login'); 
+        router.post('/logout');
     } catch (error) {
         console.error('Logout failed:', error);
     }
