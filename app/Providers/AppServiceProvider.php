@@ -29,7 +29,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('instructor-access', function (User $user) {
-            return $user->role === 'instructor';
+            return $user->role === 'instructor' || $user->role === 'admin';
+        });
+
+        Gate::define('student-access', function (User $user) {
+            return in_array($user->role, ['student', 'instructor', 'admin']);
         });
     }
 }

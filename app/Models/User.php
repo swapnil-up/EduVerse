@@ -22,6 +22,12 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'phone',
+        'bio',
+        'avatar',
+        'date_of_birth',
+        'city',
+        'country',
     ];
 
     /**
@@ -67,4 +73,18 @@ class User extends Authenticatable
         return $this->hasMany(Course::class);
     }
 
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar) {
+            return asset('storage/avatars/' . $this->avatar);
+        }
+        
+        // Generate default avatar using initials
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=6366f1&color=white&size=150';
+    }
 }

@@ -5,30 +5,48 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\CheckRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return inertia('Welcome');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+// Auth routes
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-Route::middleware(['auth'])->group(function () {
-    Route::get('/admin', [DashboardController::class, 'admin'])->middleware(CheckRole::class.':admin');
-    Route::get('/instructor', [DashboardController::class, 'instructor'])->middleware(CheckRole::class.':instructor');
-    Route::get('/student', [DashboardController::class, 'student'])->middleware(CheckRole::class.':student');
+    
+    // All auth users
+    Route::get('/dashboard', function () {
+        $user = Auth::user();
+        
+        // Redirect based on role
+        return match($user->role) {
+            'admin' => redirect()->route('admin.dashboard'),
+            'instructor' => redirect()->route('instructor.dashboard'),
+            'student' => redirect()->route('student.dashboard'),
+            default => redirect()->route('student.dashboard'),
+        };
+    })->name('dashboard');
+
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Admin routes
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+    });
+
+    // Instructor routes  
+    Route::middleware(['role:instructor,admin'])->prefix('instructor')->name('instructor.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'instructor'])->name('dashboard');
+    });
+
+    // Student routes (all roles can access)
+    Route::prefix('student')->name('student.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'student'])->name('dashboard');
+    });
 });
 
 require __DIR__.'/auth.php';
