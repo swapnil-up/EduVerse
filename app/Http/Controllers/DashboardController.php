@@ -26,6 +26,7 @@ class DashboardController extends Controller
         return inertia('Dashboard/Admin', [
             'user' => Auth::user(),
             'stats' => $stats,
+            'usersLink' => route('admin.users.index'),
         ]);
     }
 
