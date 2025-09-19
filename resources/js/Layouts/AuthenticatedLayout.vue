@@ -40,6 +40,23 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Dashboard
                                 </NavLink>
+                                
+                                <NavLink :href="route('profile.show')" :active="route().current('profile.*')">
+                                    Profile
+                                </NavLink>
+
+                                <!-- Role-specific navigation -->
+                                <NavLink v-if="$page.props.auth.user.role === 'admin'" 
+                                        :href="route('admin.dashboard')" 
+                                        :active="route().current('admin.*')">
+                                    Admin Panel
+                                </NavLink>
+
+                                <NavLink v-if="$page.props.auth.user.role === 'instructor'" 
+                                        :href="route('instructor.dashboard')" 
+                                        :active="route().current('instructor.*')">
+                                    My Courses
+                                </NavLink>
                             </div>
                         </div>
 
