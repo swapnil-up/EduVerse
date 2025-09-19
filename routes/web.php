@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Instructor\CourseController;
 use App\Http\Middleware\CheckRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,7 @@ Route::middleware('auth')->group(function () {
     // Instructor routes  
     Route::middleware(['role:instructor,admin'])->prefix('instructor')->name('instructor.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'instructor'])->name('dashboard');
+        Route::resource('courses', CourseController::class);
     });
 
     // Student routes (all roles can access)

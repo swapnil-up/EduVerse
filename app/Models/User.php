@@ -73,6 +73,11 @@ class User extends Authenticatable
         return $this->hasMany(Course::class);
     }
 
+    public function instructorCourses()
+    {
+        return $this->courses()->where('user_id', $this->id);
+    }
+
     public function hasRole(string $role): bool
     {
         return $this->role === $role;
