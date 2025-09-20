@@ -3,7 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Instructor\CourseController;
+use App\Http\Controllers\Instructor\CourseController as InstructorCourseController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Middleware\CheckRole;
 use Illuminate\Foundation\Application;
@@ -46,13 +47,17 @@ Route::middleware('auth')->group(function () {
     // Instructor routes  
     Route::middleware(['role:instructor,admin'])->prefix('instructor')->name('instructor.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'instructor'])->name('dashboard');
-        Route::resource('courses', CourseController::class);
+        Route::resource('courses', InstructorCourseController::class);
     });
 
     // Student routes (all roles can access)
     Route::prefix('student')->name('student.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'student'])->name('dashboard');
     });
+
+    // Public
+    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+    Route::get('/courses/{course:slug}', [CourseController::class, 'show'])->name('courses.show');
 });
 
 require __DIR__.'/auth.php';
