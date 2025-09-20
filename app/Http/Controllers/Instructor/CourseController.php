@@ -20,15 +20,31 @@ class CourseController extends Controller
         $this->fileService = $fileService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $courses = Course::where('user_id', Auth::id())
-                        ->with('category')
-                        ->latest()
-                        ->paginate(12);
+        $query = Course::where('user_id', Auth::id())->with('category');
+
+        // Filters 
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        $courses = $query->latest()->paginate(12)->withQueryString();
+
+        $categories = Category::active()->orderBy('name')->get();
 
         return inertia('Instructor/Courses/Index', [
             'courses' => $courses,
+            'categories' => $categories,
+            'filters' => $request->only(['category', 'status', 'search']),
         ]);
     }
 

@@ -19,6 +19,61 @@
                     </Link>
                 </div>
 
+                <div class="bg-white rounded-lg shadow p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Filter Courses</h3>
+                    
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <!-- Search -->
+                        <div>
+                            <input 
+                                v-model="searchForm.search"
+                                type="text"
+                                placeholder="Search courses..."
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                @input="applyFilters"
+                            >
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div>
+                            <select 
+                                v-model="searchForm.category"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                @change="applyFilters"
+                            >
+                                <option value="">All Categories</option>
+                                <option v-for="category in categories" :key="category.id" :value="category.id">
+                                    {{ category.icon }} {{ category.name }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div>
+                            <select 
+                                v-model="searchForm.status"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                @change="applyFilters"
+                            >
+                                <option value="">All Status</option>
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+
+                        <!-- Clear Filters -->
+                        <div>
+                            <button 
+                                @click="clearFilters"
+                                class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                            >
+                                Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Courses Grid -->
                 <div v-if="courses.data.length > 0">
                     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -128,9 +183,39 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { reactive, onMounted } from 'vue';
 
-const props = defineProps(['courses']);
-console.log("courses prop", props.courses); 
+const props = defineProps(['courses', 'categories', 'filters']);
+
+const searchForm = reactive({
+    search: props.filters?.search || '',
+    category: props.filters?.category || '',
+    status: props.filters?.status || '',
+});
+
+const applyFilters = () => {
+    const query = {};
+    
+    if (searchForm.search) query.search = searchForm.search;
+    if (searchForm.category) query.category = searchForm.category;
+    if (searchForm.status) query.status = searchForm.status;
+
+    router.get(route('instructor.courses.index'), query, {
+        preserveState: true,
+        replace: true,
+    });
+};
+
+const clearFilters = () => {
+    searchForm.search = '';
+    searchForm.category = '';
+    searchForm.status = '';
+    
+    router.get(route('instructor.courses.index'), {}, {
+        preserveState: true,
+        replace: true,
+    });
+};
 
 const confirmDelete = (course) => {
     if (confirm(`Are you sure you want to delete "${course.title}"? This action cannot be undone.`)) {

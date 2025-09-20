@@ -86,19 +86,20 @@
                         </div>
                     </Link>
 
-                    <div class="bg-white p-6 rounded-lg shadow">
+                    <Link :href="route('admin.categories.index')" 
+                        class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow block">
                         <div class="flex items-center">
-                            <div class="bg-green-500 text-white p-3 rounded-full mr-4">
+                            <div class="bg-yellow-500 text-white p-3 rounded-full mr-4">
                                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                                    <path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900">Manage Courses</h3>
-                                <p class="text-gray-600 text-sm">View and moderate courses</p>
+                                <h3 class="text-lg font-semibold text-gray-900">Manage Categories</h3>
+                                <p class="text-gray-600 text-sm">Organize course categories</p>
                             </div>
                         </div>
-                    </div>
+                    </Link>
 
                     <div class="bg-white p-6 rounded-lg shadow">
                         <div class="flex items-center">
